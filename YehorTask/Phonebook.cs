@@ -14,7 +14,7 @@ namespace YehorTask
     #region Поля и свойства
 
     /// <summary>
-    /// Список хранимых абонентов.
+    /// Список абонентов.
     /// </summary>
     private List<ISubscriber> subscribers;
 
