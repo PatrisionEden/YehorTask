@@ -14,12 +14,11 @@ namespace YehorTask
     /// <summary>
     /// Имя абонента.
     /// </summary>
-    
     public string Name { get; }
+
     /// <summary>
     /// Номер телефона абонента.
     /// </summary>
-    
-    public string PhoneNumber { get; }
+    public string Phonenumber { get; }
   }
 }

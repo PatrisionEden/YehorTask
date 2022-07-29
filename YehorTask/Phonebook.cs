@@ -12,22 +12,25 @@ namespace YehorTask
   internal class Phonebook
   {
     #region Поля и свойства
+
     /// <summary>
     /// Список хранимых абонентов.
     /// </summary>
     private List<ISubscriber> subscribers;
+
     #endregion
 
     #region Методы
+
     /// <summary>
     /// Добавить абонента в справочник.
     /// </summary>
-    /// <exception cref="ArgumentException">Если абонент с таким номером уже есть в справочнике.</exception>
+    /// <exception cref="ArgumentException">Возникает если абонент с таким номером уже есть в справочнике.</exception>
     /// <param name="subscriber">Абонент которого нужно добавить.</param>
     public void AddSubscriber(ISubscriber subscriber)
     {
-      if (this.subscribers.Any(s => s.Name == subscriber.PhoneNumber))
-        throw new ArgumentException("Абонент с таким номером уже есть в справочнике.");
+      if (this.subscribers.Any(s => s.Name == subscriber.Phonenumber))
+        throw new ArgumentException($"Абонент с номером \"{subscriber.Phonenumber}\" уже есть в справочнике.");
       this.subscribers.Add(subscriber);
     }
 
@@ -35,13 +38,13 @@ namespace YehorTask
     /// Получить абонента по номеру телефона.
     /// </summary>
     /// <param name="phonenumber">Номер телефона абонента.</param>
-    /// <exception cref="KeyNotFoundException">Если абонента с таким телефоном нет в справочнике.</exception>
-    /// <exception cref="Exception">Если в справочнике больше одного абонента с одинаковым номером.</exception>
+    /// <exception cref="KeyNotFoundException">Возникает если абонента с таким телефоном нет в справочнике.</exception>
+    /// <exception cref="Exception">Возникает если в справочнике больше одного абонента с одинаковым номером.</exception>
     /// <returns>Найденый абонент.</returns>
-    public ISubscriber GetSubscriberByPhone(string phonenumber)
+    public ISubscriber GetSubscriberByPhonenumber(string phonenumber)
     {
       var subscribersWithThisPhonenumber =
-        this.subscribers.Where(s => s.PhoneNumber == phonenumber);
+        this.subscribers.Where(s => s.Phonenumber == phonenumber);
 
       if (subscribersWithThisPhonenumber.Count() == 0)
         throw new KeyNotFoundException("Абонента с таким телефоном нет в справочнике.");
@@ -55,7 +58,7 @@ namespace YehorTask
     /// Получить абонентов по имени.
     /// </summary>
     /// <param name="name">Имя абонента.</param>
-    /// <exception cref="KeyNotFoundException">Если ни у одного абонента из справочника нет такого имени.</exception>
+    /// <exception cref="KeyNotFoundException">Возникает если ни у одного абонента из справочника нет такого имени.</exception>
     /// <returns>Найденые абоненты.</returns>
     public IEnumerable<ISubscriber> GetSubscribersByName(string name)
     {
@@ -76,9 +79,11 @@ namespace YehorTask
     {
       return this.subscribers.Remove(subscriber);
     }
+
     #endregion
 
     #region Конструкторы
+
     /// <summary>
     /// Конструктор.
     /// </summary>
@@ -86,6 +91,7 @@ namespace YehorTask
     {
       this.subscribers = new List<ISubscriber>();
     }
+
     #endregion
   }
 }

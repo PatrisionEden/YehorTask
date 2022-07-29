@@ -13,17 +13,17 @@ namespace YehorTask
   {
     public string Name { get; set; }
 
-    public string PhoneNumber { get; set; }
+    public string Phonenumber { get; set; }
 
     /// <summary>
     /// Конструктор.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="phoneNumber"></param>
+    /// <param name="name">Имя абонента.</param>
+    /// <param name="phoneNumber">Телефон абонента.</param>
     public Subscriber(string name, string phoneNumber)
     {
       Name = name;
-      PhoneNumber = phoneNumber;
+      Phonenumber = phoneNumber;
     }
   }
 }
