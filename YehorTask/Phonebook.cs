@@ -38,20 +38,10 @@ namespace YehorTask
     /// Получить абонента по номеру телефона.
     /// </summary>
     /// <param name="phonenumber">Номер телефона абонента.</param>
-    /// <exception cref="KeyNotFoundException">Возникает если абонента с таким телефоном нет в справочнике.</exception>
-    /// <exception cref="Exception">Возникает если в справочнике больше одного абонента с одинаковым номером.</exception>
     /// <returns>Найденый абонент.</returns>
     public ISubscriber GetSubscriberByPhonenumber(string phonenumber)
     {
-      var subscribersWithThisPhonenumber =
-        this.subscribers.Where(s => s.Phonenumber == phonenumber);
-
-      if (subscribersWithThisPhonenumber.Count() == 0)
-        throw new KeyNotFoundException("Абонента с таким телефоном нет в справочнике.");
-      else if (subscribersWithThisPhonenumber.Count() > 1)
-        throw new Exception("Неправильное состояние объекта, больше одного абонента с одинаковым номером.");
-
-      return subscribersWithThisPhonenumber.First();
+      return subscribers.Where(s => s.Phonenumber == phonenumber).Single();
     }
 
     /// <summary>
