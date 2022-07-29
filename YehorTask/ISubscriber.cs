@@ -6,15 +6,20 @@ using System.Threading.Tasks;
 
 namespace YehorTask
 {
+  /// <summary>
+  /// Абонент.
+  /// </summary>
   interface ISubscriber
   {
     /// <summary>
-    /// Имя абонента
+    /// Имя абонента.
     /// </summary>
+    
     public string Name { get; }
     /// <summary>
-    /// Номер телефона абонента
+    /// Номер телефона абонента.
     /// </summary>
+    
     public string PhoneNumber { get; }
   }
 }

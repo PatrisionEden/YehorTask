@@ -6,197 +6,85 @@ using System.Threading.Tasks;
 
 namespace YehorTask
 {
-  class Phonebook
+  /// <summary>
+  /// Телефонный справочник.
+  /// </summary>
+  internal class Phonebook
   {
     #region Поля и свойства
     /// <summary>
-    /// Словарь который связывает имя с ISubscriber.
+    /// Список хранимых абонентов.
     /// </summary>
-    private Dictionary<string, List<ISubscriber>> mapByName;
-    /// <summary>
-    /// Словарь который связывает номер телефона с ISubscriber.
-    /// </summary>
-    private Dictionary<string, List<ISubscriber>> mapByPhone;
+    private List<ISubscriber> subscribers;
     #endregion
+
     #region Методы
     /// <summary>
-    /// Добавляет <paramref name="subscriber"/> в экземпляр Phonebook.
+    /// Добавить абонента в справочник.
     /// </summary>
-    /// <param name="subscriber">Запись в Phonebook к добавлению.</param>
+    /// <exception cref="ArgumentException">Если абонент с таким номером уже есть в справочнике.</exception>
+    /// <param name="subscriber">Абонент которого нужно добавить.</param>
     public void AddSubscriber(ISubscriber subscriber)
     {
-      if (!this.mapByName.ContainsKey(subscriber.Name))
-        this.mapByName[subscriber.Name] = new List<ISubscriber>();
-      if (!this.mapByPhone.ContainsKey(subscriber.PhoneNumber))
-        this.mapByPhone[subscriber.PhoneNumber] = new List<ISubscriber>();
+      if (this.subscribers.Any(s => s.Name == subscriber.PhoneNumber))
+        throw new ArgumentException("Абонент с таким номером уже есть в справочнике.");
+      this.subscribers.Add(subscriber);
+    }
 
-      this.mapByName[subscriber.Name].Add(subscriber);
-      this.mapByPhone[subscriber.PhoneNumber].Add(subscriber);
-    }
     /// <summary>
-    /// Возвращает коллекцию Subscriber c переданным <paramref name="name"/>.
+    /// Получить абонента по номеру телефона.
     /// </summary>
-    /// <param name="name">Имя Subscriber.</param>
-    /// <returns>Коллекция Subscriber с соответсвующими Name.</returns>
-    public IReadOnlyCollection<ISubscriber> GetSubscribersByName(string name)
+    /// <param name="phonenumber">Номер телефона абонента.</param>
+    /// <exception cref="KeyNotFoundException">Если абонента с таким телефоном нет в справочнике.</exception>
+    /// <exception cref="Exception">Если в справочнике больше одного абонента с одинаковым номером.</exception>
+    /// <returns>Найденый абонент.</returns>
+    public ISubscriber GetSubscriberByPhone(string phonenumber)
     {
-      return this.mapByName[name];
-    }
-    /// <summary>
-    /// Возвращает коллекцию Subscriber c переданным <paramref name="phonenumber"/>.
-    /// </summary>
-    /// <param name="phonenumber">Номер телефона Subscriber.</param>
-    /// <returns>Коллекция Subscriber с соответсвующими Phonenumber.</returns>
-    public IReadOnlyCollection<ISubscriber> GetSubscribersByPhone(string phonenumber)
-    {
-      return this.mapByPhone[phonenumber];
-    }
-    /// <summary>
-    /// Возвращает первого Subscriber с совпавшим <paramref name="name"/>.
-    /// </summary>
-    /// <param name="name">Имя Subscriber.</param>
-    /// <returns>Первый Subscriber с совпавшим <paramref name="name"/>.</returns>
-    public ISubscriber GetFirstSubscriberByName(string name)
-    {
-      try
-      {
-        return this.mapByName[name].First();
-      }
-      catch (Exception ex)
-      {
-        throw new KeyNotFoundException("Не был найден", ex);
-      }
-    }
-    /// <summary>
-    /// Возвращает первого Subscriber с совпавшим <paramref name="phonenumber"/>.
-    /// </summary>
-    /// <param name="phonenumber">Имя Subscriber</param>.
-    /// <returns>Первый Subscriber с совпавшим <paramref name="phonenumber"/>.</returns>
-    public ISubscriber GetSubscriberByPhonenumber(string phonenumber)
-    {
-      try
-      {
-        return this.mapByPhone[phonenumber].First();
-      }
-      catch (Exception ex)
-      {
-        throw new KeyNotFoundException("Не был найден", ex);
-      }
-    }
-    /// <summary>
-    /// Удаляет Subscriber из Phonebook в том случае если, по переданному 
-    /// <paramref name="name"/> есть одно и только одно совпадение.
-    /// </summary>
-    /// <param name="name">Имя, по которому будет удален Subscriber.</param>
-    /// <returns>Удаляемый Subscriber.</returns>
-    public ISubscriber DeleteSubscriberByName(string name)
-    {
-      if (!this.mapByName.ContainsKey(name))
-        throw new KeyNotFoundException(name + " не существует в данном phonebook");
-      if (this.mapByName[name].Count > 1)
-        throw new Exception("больше одного значения по данному name");
+      var subscribersWithThisPhonenumber =
+        this.subscribers.Where(s => s.PhoneNumber == phonenumber);
 
-      var toBeDeleted = this.mapByName[name].First();
-      DeleteSubscriberFromMapByPhone(toBeDeleted);
-      this.mapByName[name] = new List<ISubscriber>();
-      return toBeDeleted;
+      if (subscribersWithThisPhonenumber.Count() == 0)
+        throw new KeyNotFoundException("Абонента с таким телефоном нет в справочнике.");
+      else if (subscribersWithThisPhonenumber.Count() > 1)
+        throw new Exception("Неправильное состояние объекта, больше одного абонента с одинаковым номером.");
+
+      return subscribersWithThisPhonenumber.First();
     }
-    /// <summary>
-    /// Удаляет Subscriber из Phonebook в том случае если, по переданному 
-    /// <paramref name="phonenumber"/> есть одно и только одно совпадение.
-    /// </summary>
-    /// <param name="phonenumber">Номер телефона, по которому будет удален Subscriber.</param>
-    /// <returns>Удаляемый Subscriber.</returns>
-    public ISubscriber DeleteSubscriberByPhonenumber(string phonenumber)
-    {
-      if (!this.mapByPhone.ContainsKey(phonenumber))
-        throw new KeyNotFoundException(phonenumber + " не существует в данном phonebook");
-      if (this.mapByPhone[phonenumber].Count > 1)
-        throw new Exception("больше одного значения по данному phonenumber");
 
-      var toBeDeleted = this.mapByPhone[phonenumber].First();
-      DeleteSubscriberFromMapByName(toBeDeleted);
-      this.mapByPhone[phonenumber] = new List<ISubscriber>();
-      return toBeDeleted;
+    /// <summary>
+    /// Получить абонентов по имени.
+    /// </summary>
+    /// <param name="name">Имя абонента.</param>
+    /// <exception cref="KeyNotFoundException">Если ни у одного абонента из справочника нет такого имени.</exception>
+    /// <returns>Найденые абоненты.</returns>
+    public IEnumerable<ISubscriber> GetSubscribersByName(string name)
+    {
+      var subscribersWithThisPhonenumber = this.subscribers.Where(s => s.Name == name);
+
+      if (!subscribersWithThisPhonenumber.Any())
+        throw new KeyNotFoundException("Абонентов с таким именем нет в справочнике.");
+
+      return subscribersWithThisPhonenumber;
     }
+
     /// <summary>
-    /// Удаляет одно или нескоолько вхождений <paramref name="subscriber"/> из Phonebook.
+    /// Удалить абонента из справочника.
     /// </summary>
-    /// <param name="subscriber">Удаляемый Subscriber.</param>
-    public void DeleteSubscriber(ISubscriber subscriber)
+    /// <param name="subscriber">Удаляемый абонент.</param>
+    /// <returns>Удалось ли удалить переданного абонента.</returns>
+    public bool DeleteSubscriber(ISubscriber subscriber)
     {
-      DeleteSubscriberFromMapByPhone(subscriber);
-      DeleteSubscriberFromMapByName(subscriber);
-    }
-    /// <summary>
-    /// Удаляет все вхождения Subscriber с переданным <paramref name="name"/>.
-    /// </summary>
-    /// <param name="name">Имя, с которым Subscriber будут удалены.</param>
-    /// <returns>Коллекция удаленных Subscriber.</returns>
-    public IReadOnlyCollection<ISubscriber> DeleteAllByName(string name)
-    {
-      if (!this.mapByName.ContainsKey(name))
-        return new List<ISubscriber>();
-
-      var toBeDeletedList = this.mapByName[name];
-      this.mapByName[name] = new List<ISubscriber>();
-
-      foreach (var toBeDeletedSubscriber in toBeDeletedList)
-      {
-        DeleteSubscriberFromMapByPhone(toBeDeletedSubscriber);
-        DeleteSubscriberFromMapByName(toBeDeletedSubscriber);
-      }
-
-      return toBeDeletedList;
-    }
-    /// <summary>
-    /// Удаляет все вхождения Subscriber с переданным <paramref name="phonenumber"/>.
-    /// </summary>
-    /// <param name="phonenumber">Номер телефона, с которым Subscriber будут удалены.</param>
-    /// <returns>Коллекция удаленных Subscriber.</returns>
-    public IReadOnlyCollection<ISubscriber> DeleteAllByPhone(string phonenumber)
-    {
-      if (!this.mapByPhone.ContainsKey(phonenumber))
-        return new List<ISubscriber>();
-
-      var toBeDeletedList = this.mapByPhone[phonenumber];
-      this.mapByPhone[phonenumber] = new List<ISubscriber>();
-
-      foreach (var toBeDeletedSubscriber in toBeDeletedList)
-      {
-        DeleteSubscriberFromMapByPhone(toBeDeletedSubscriber);
-        DeleteSubscriberFromMapByName(toBeDeletedSubscriber);
-      }
-
-      return toBeDeletedList;
-    }
-    /// <summary>
-    /// Удалить все вхождения <paramref name="subscriber"/> из mapByPhone.
-    /// </summary>
-    /// <param name="subscriber">Тот, которого нужно удалить.</param>
-    private void DeleteSubscriberFromMapByPhone(ISubscriber subscriber)
-    {
-      var list = this.mapByPhone[subscriber.PhoneNumber];
-      list.Remove(subscriber);
-    }
-    /// <summary>
-    /// Удалить все вхождения <paramref name="subscriber"/> из mapByName.
-    /// </summary>
-    /// <param name="subscriber">Тот, которого нужно удалить.</param>
-    private void DeleteSubscriberFromMapByName(ISubscriber subscriber)
-    {
-      var list = this.mapByName[subscriber.Name];
-      list.Remove(subscriber);
+      return this.subscribers.Remove(subscriber);
     }
     #endregion
+
     #region Конструкторы
     /// <summary>
-    /// Конструктор класса Phonebook. Инициализирует поля дефолтными значениями.
+    /// Конструктор.
     /// </summary>
     public Phonebook()
     {
-      this.mapByName = new Dictionary<string, List<ISubscriber>>(); //вот тут неопределенка.
-      this.mapByPhone = new Dictionary<string, List<ISubscriber>>();
+      this.subscribers = new List<ISubscriber>();
     }
     #endregion
   }
