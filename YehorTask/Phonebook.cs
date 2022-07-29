@@ -55,7 +55,7 @@ namespace YehorTask
       var subscribersWithThisPhonenumber = this.subscribers.Where(s => s.Name == name);
 
       if (!subscribersWithThisPhonenumber.Any())
-        throw new KeyNotFoundException("Абонентов с таким именем нет в справочнике.");
+        throw new KeyNotFoundException($"Абонентов с именем \"{name}\" нет в справочнике.");
 
       return subscribersWithThisPhonenumber;
     }
@@ -64,10 +64,9 @@ namespace YehorTask
     /// Удалить абонента из справочника.
     /// </summary>
     /// <param name="subscriber">Удаляемый абонент.</param>
-    /// <returns>Удалось ли удалить переданного абонента.</returns>
-    public bool DeleteSubscriber(ISubscriber subscriber)
+    public void DeleteSubscriber(ISubscriber subscriber)
     {
-      return this.subscribers.Remove(subscriber);
+      this.subscribers.Remove(subscriber);
     }
 
     #endregion
